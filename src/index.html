@@ -73,11 +73,17 @@
         return;
       }
 
+      let result;
       try {
-        window.AppApi[method](...(args || []));
+        result = window.AppApi[method](...(args || []));
       } catch (err) {
         console.error("Error executing method:", method, err);
+        result = null;
       }
+      e.source.postMessage({
+        type: "result",
+        value: result
+      }, "*");
     });
   </script>
 </body>
