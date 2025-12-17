@@ -1,4 +1,4 @@
-require.config( { 'vs/nls': { availableLanguages: { '*': "ru" } } } );
+require.config({ 'vs/nls': { availableLanguages: { '*': "ru" } } });
 
 define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/editor.main', 'actions', 'bslQuery', 'bslDCS', 'colors'], function () {
 
@@ -29,12 +29,12 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   statusBarWidget = null;
   ctrlPressed = false;
   altPressed = false;
-  shiftPressed = false;  
+  shiftPressed = false;
   signatureVisible = true;
   currentBookmark = -1;
   currentMarker = -1;
   activeSuggestionAcceptors = [];
-  diffEditor = null;  
+  diffEditor = null;
   inlineDiffEditor = null;
   inlineDiffWidget = null;
   events_queue = [];
@@ -48,6 +48,18 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   // #endregion
 
   // #region public API
+  window.AppApi = window.AppApi || {};
+
+  window.AppApi.setMinimap = function (enabled) {
+    if (!window.editor) {
+      console.warn("Editor not ready yet");
+      return false;
+    }
+
+    window.editor.updateOptions({minimap: {enabled} });
+    return true;
+  };
+
   wordWrap = function (enabled) {
 
     if (editor.navi) {
@@ -57,37 +69,37 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     else {
       editor.updateOptions({ wordWrap: enabled })
     }
-  
+
   }
 
-  reserMark = function() {
+  reserMark = function () {
 
     clearInterval(err_tid);
     editor.updateDecorations([]);
 
   }
 
-  sendEvent = function(eventName, eventParams) {
+  sendEvent = function (eventName, eventParams) {
 
     console.debug(eventName, eventParams);
     let lastEvent = new MouseEvent('click');
-    lastEvent.eventData1C = {event : eventName, params: eventParams};
+    lastEvent.eventData1C = { event: eventName, params: eventParams };
     return dispatchEvent(lastEvent);
     // The new event model is disabled until fix https://github.com/salexdv/bsl_console/issues/#217
-    events_queue.push({event : eventName, params: eventParams});
+    events_queue.push({ event: eventName, params: eventParams });
     document.getElementById('event-button').click();
-    
+
   }
 
-  setText = function(txt, range, usePadding) {
+  setText = function (txt, range, usePadding) {
 
     editor.pushUndoStop();
-    
+
     editor.checkBookmarks = false;
 
-    reserMark();    
+    reserMark();
     bslHelper.setText(txt, range, usePadding);
-    
+
     if (getText()) {
       checkBookmarksCount();
       checkBreakpointsCount();
@@ -96,27 +108,27 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       removeAllBookmarks();
       removeAllBreakpoints();
     }
-    
+
     editor.checkBookmarks = true;
 
   }
-  
-  updateText = function(txt, clearUndoHistory = true) {
+
+  updateText = function (txt, clearUndoHistory = true) {
 
     let read_only = readOnlyMode;
     let mod_event = getOption('generateModificationEvent');
-    editor.checkBookmarks = false;   
+    editor.checkBookmarks = false;
 
-    reserMark();  
+    reserMark();
 
     if (read_only)
       setReadOnly(false);
 
-    if (mod_event)    
+    if (mod_event)
       setOption('generateModificationEvent', false);
 
     eraseTextBeforeUpdate();
-    
+
     if (clearUndoHistory)
       editor.setValue(txt);
     else
@@ -130,8 +142,8 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       removeAllBookmarks();
       revomeAllBreakpoints();
     }
-  
-    if (mod_event)    
+
+    if (mod_event)
       setOption('generateModificationEvent', true);
 
     if (read_only)
@@ -141,20 +153,20 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  setContent = function(text) {
+  setContent = function (text) {
 
     let read_only = readOnlyMode;
     let mod_event = getOption('generateModificationEvent');
-    
+
     if (read_only)
       setReadOnly(false);
 
-    if (mod_event)    
+    if (mod_event)
       setOption('generateModificationEvent', false);
 
     editor.setValue(text)
 
-    if (mod_event)    
+    if (mod_event)
       setOption('generateModificationEvent', true);
 
     if (read_only)
@@ -163,15 +175,15 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   }
 
   eraseText = function () {
-    
+
     setText('', editor.getModel().getFullModelRange(), false);
-    
+
     removeReviewWidgets();
     currentIssue = -1;
 
   }
 
-  getText = function(txt) {
+  getText = function (txt) {
 
     return getActiveEditor().getValue();
 
@@ -179,21 +191,21 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   getQuery = function () {
 
-    let bsl = new bslHelper(editor.getModel(), editor.getPosition());		
+    let bsl = new bslHelper(editor.getModel(), editor.getPosition());
     return bsl.getQuery();
 
   }
 
   getFormatString = function () {
 
-    let bsl = new bslHelper(editor.getModel(), editor.getPosition());		
+    let bsl = new bslHelper(editor.getModel(), editor.getPosition());
     return bsl.getFormatString();
 
   }
 
   updateMetadata = function (metadata, path = '') {
-        
-    let bsl = new bslHelper(editor.getModel(), editor.getPosition());		
+
+    let bsl = new bslHelper(editor.getModel(), editor.getPosition());
     return bsl.updateMetadata(metadata, path);
 
   }
@@ -208,22 +220,22 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
     return bslHelper.parseMetadataModule(moduleText, path);
 
-  }  
+  }
 
   updateSnippets = function (snips, replace = false) {
-        
-    return bslHelper.updateSnippets(snips, replace);    
+
+    return bslHelper.updateSnippets(snips, replace);
 
   }
 
   updateCustomFunctions = function (data) {
-        
+
     return bslHelper.updateCustomFunctions(data);
 
   }
 
   setTheme = function (theme) {
-        
+
     monaco.editor.setTheme(theme);
     setThemeVariablesDisplay(theme);
 
@@ -236,7 +248,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
     if (contextMenuEnabled)
       editor.updateOptions({ contextmenu: !readOnly });
-    
+
   }
 
   getReadOnly = function () {
@@ -246,28 +258,28 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   }
 
   switchLang = function (language) {
-    
+
     if (language == undefined)
       engLang = !engLang;
     else
       engLang = (language == 'en');
 
     return engLang ? 'en' : 'ru';
-    
+
   }
 
   addComment = function () {
-    
-    let bsl = new bslHelper(editor.getModel(), editor.getPosition());		
+
+    let bsl = new bslHelper(editor.getModel(), editor.getPosition());
     bsl.addComment();
 
   }
 
   removeComment = function () {
-    
-    let bsl = new bslHelper(editor.getModel(), editor.getPosition());		
+
+    let bsl = new bslHelper(editor.getModel(), editor.getPosition());
     bsl.removeComment();
-    
+
   }
 
   markError = function (line, column) {
@@ -298,7 +310,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     return bsl.findText(string);
   }
 
-  init = function(version, user = '') {
+  init = function (version, user = '') {
 
     version1C = version;
     userName = user;
@@ -316,10 +328,10 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   minimap = function (enabled) {
 
     editor.updateOptions({ minimap: { enabled: enabled } });
-    
+
   }
 
-  addContextMenuItem = function(label, eventName) {
+  addContextMenuItem = function (label, eventName) {
 
     let time = new Date().getTime();
     let id = time.toString() + '.' + Math.random().toString(36).substring(8);
@@ -328,27 +340,27 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       label: label,
       contextMenuGroupId: 'navigation',
       contextMenuOrder: time,
-      run: function () {     
-          sendEvent(eventName, "");
-          return null;
+      run: function () {
+        sendEvent(eventName, "");
+        return null;
       }
     });
 
   }
 
-  isQueryMode = function() {
+  isQueryMode = function () {
 
     return getCurrentLanguageId() == 'bsl_query';
 
   }
 
-  isDCSMode = function() {
+  isDCSMode = function () {
 
     return getCurrentLanguageId() == 'dcs_query';
 
   }
 
-  setLanguageMode = function(mode) {
+  setLanguageMode = function (mode) {
 
     let isCompareMode = (editor.navi != undefined);
 
@@ -375,119 +387,119 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  setDebugMode = function(mode) {
+  setDebugMode = function (mode) {
 
     debugMode = mode;
     initContextMenuActions();
 
   }
 
-  isDebugMode = function() {
+  isDebugMode = function () {
 
     return debugMode;
 
   }
 
-  setUsingDebugger = function(mode) {
+  setUsingDebugger = function (mode) {
 
     usingDebugger = mode;
     initContextMenuActions();
 
   }
 
-  isUsingDebugger = function() {
+  isUsingDebugger = function () {
 
     return usingDebugger;
 
   }
 
-  getCurrentLanguageId = function() {
+  getCurrentLanguageId = function () {
 
     let identifier = getActiveEditor().getModel().getLanguageIdentifier();
     return identifier.language;
 
   }
 
-  getSelectedText = function() {
+  getSelectedText = function () {
 
     const active_editor = getActiveEditor();
     const model = active_editor.getModel();
     const selection = active_editor.getSelection();
-    
+
     return model.getValueInRange(selection);
 
   }
 
   addWordWrap = function () {
-    
-    let bsl = new bslHelper(editor.getModel(), editor.getPosition());		
+
+    let bsl = new bslHelper(editor.getModel(), editor.getPosition());
     bsl.addWordWrap();
 
   }
 
   removeWordWrap = function () {
-    
-    let bsl = new bslHelper(editor.getModel(), editor.getPosition());		
+
+    let bsl = new bslHelper(editor.getModel(), editor.getPosition());
     bsl.removeWordWrap();
-    
+
   }
 
   setCustomHovers = function (hoversJSON) {
-    
+
     try {
-			customHovers = JSON.parse(hoversJSON);			
-			return true;
-		}
-		catch (e) {
+      customHovers = JSON.parse(hoversJSON);
+      return true;
+    }
+    catch (e) {
       customHovers = {};
-			return { errorDescription: e.message };
-		}
+      return { errorDescription: e.message };
+    }
 
   }
 
-  setCustomSignatures = function(sigJSON) {
+  setCustomSignatures = function (sigJSON) {
 
     try {
-			customSignatures = JSON.parse(sigJSON);			
-			return true;
-		}
-		catch (e) {
+      customSignatures = JSON.parse(sigJSON);
+      return true;
+    }
+    catch (e) {
       customSignatures = {};
-			return { errorDescription: e.message };
-		}    
+      return { errorDescription: e.message };
+    }
 
   }
 
-  setCustomCodeLenses = function(lensJSON) {
+  setCustomCodeLenses = function (lensJSON) {
 
     try {
       if (editor.navi)
         editor.getModifiedEditor().updateOptions({ codeLens: true });
-			customCodeLenses = JSON.parse(lensJSON);
+      customCodeLenses = JSON.parse(lensJSON);
       editor.updateCodeLens();
-			return true;
-		}
-		catch (e) {
+      return true;
+    }
+    catch (e) {
       customCodeLenses = [];
-			return { errorDescription: e.message };
-		}    
+      return { errorDescription: e.message };
+    }
 
   }
 
   getVarsNames = function (includeLineNumber = false) {
-    
-    let bsl = new bslHelper(editor.getModel(), editor.getPosition());		
-    return bsl.getVarsNames(0, includeLineNumber);    
-    
+
+    let bsl = new bslHelper(editor.getModel(), editor.getPosition());
+    return bsl.getVarsNames(0, includeLineNumber);
+
   }
 
-  getSelection = function() {
+  getSelection = function () {
 
     return editor.getSelection();
 
   }
 
-  setSelection = function(startLineNumber, startColumn, endLineNumber, endColumn, revealStart = false) {
+  setSelection = function (startLineNumber, startColumn, endLineNumber, endColumn, revealStart = false) {
     let ActiveEditor = getActiveEditor();
     if (endLineNumber <= getLineCount()) {
       let range = new monaco.Range(startLineNumber, startColumn, endLineNumber, endColumn);
@@ -500,31 +512,31 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       return false;
   }
 
-  setSelectionByLength = function(start, end, revealStart = false) {
+  setSelectionByLength = function (start, end, revealStart = false) {
     let ActiveEditor = getActiveEditor();
     let startPosition = ActiveEditor.getModel().getPositionAt(start - 1);
     let endPosition = ActiveEditor.getModel().getPositionAt(end - 1);
-    let range = new monaco.Range(startPosition.lineNumber, startPosition.column, endPosition.lineNumber, endPosition.column);    
+    let range = new monaco.Range(startPosition.lineNumber, startPosition.column, endPosition.lineNumber, endPosition.column);
     ActiveEditor.setSelection(range);
     let postion = revealStart ? range.getStartPosition() : range.getEndPosition();
     ActiveEditor.revealPositionInCenterIfOutsideViewport(postion);
     return true;
   }
 
-  selectedText = function(text = undefined, keepSelection = false) {
+  selectedText = function (text = undefined, keepSelection = false) {
 
     if (text == undefined)
-      
-      return getSelectedText();    
 
-    else {      
-      
+      return getSelectedText();
+
+    else {
+
       if (getSelectedText()) {
 
         let selection = getSelection();
         let tempModel = monaco.editor.createModel(text);
         let tempRange = tempModel.getFullModelRange();
-        
+
         setText(text, getSelection(), false);
 
         if (keepSelection) {
@@ -542,42 +554,42 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  getLineCount = function() {
-    
+  getLineCount = function () {
+
     return getActiveEditor().getModel().getLineCount();
 
   }
 
-  getLineContent = function(lineNumber) {
+  getLineContent = function (lineNumber) {
 
     return editor.getModel().getLineContent(lineNumber)
 
   }
 
-  getCurrentLineContent = function() {
+  getCurrentLineContent = function () {
 
     return getLineContent(editor.getPosition().lineNumber);
 
   }
 
-  getCurrentLine = function() {
+  getCurrentLine = function () {
 
     return editor.getPosition().lineNumber;
 
   }
 
-  getCurrentColumn = function() {
+  getCurrentColumn = function () {
 
     return editor.getPosition().column;
 
   }
 
-  setLineContent = function(lineNumber, text) {
+  setLineContent = function (lineNumber, text) {
 
     if (lineNumber <= getLineCount()) {
       let range = new monaco.Range(lineNumber, 1, lineNumber, editor.getModel().getLineMaxColumn(lineNumber));
       setText(text, range, false);
-      return true;      
+      return true;
     }
     else {
       return false;
@@ -585,14 +597,14 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  insertLine = function(lineNumber, text) {
+  insertLine = function (lineNumber, text) {
 
     let model = editor.getModel();
     let text_model = monaco.editor.createModel(text);
     let text_range = text_model.getFullModelRange();
     let total_lines = getLineCount();
     let text_lines = text_range.endLineNumber - text_range.startLineNumber;
-    
+
     if (total_lines < lineNumber)
       lineNumber = total_lines + 1;
 
@@ -627,7 +639,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  addLine = function(text) {
+  addLine = function (text) {
 
     let line = getLineCount();
 
@@ -644,16 +656,16 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  deleteLine = function(lineNumber) {
+  deleteLine = function (lineNumber) {
 
     editor.executeEdits('addLine', [{
       range: new monaco.Range(lineNumber, 1, lineNumber + 1, 1),
-      text: null      
+      text: null
     }]);
 
   }
 
-  getPositionOffset = function() {
+  getPositionOffset = function () {
 
     let position = editor.getPosition();
     let v_pos = editor.getScrolledVisiblePosition(position);
@@ -661,11 +673,11 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     let top = Math.min(v_pos.top, layer.height);
     let left = Math.min(v_pos.left, layer.width);
 
-    return {top: top, left: left}
+    return { top: top, left: left }
 
   }
 
-  setDiffSideBySideMode = function(sideBySide) {
+  setDiffSideBySideMode = function (sideBySide) {
     editor.updateOptions({
       renderSideBySide: sideBySide
     });
@@ -673,21 +685,21 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   }
 
   compare = function (text, sideBySide, highlight, markLines = true, ignoreWhitespace = true, newOriginalText = "") {
-    
+
     let language_id = getCurrentLanguageId();
     let currentTheme = getCurrentThemeName();
     let previous_options = getActiveEditor().getRawOptions();
-  
+
     let status_bar = statusBarWidget ? true : false;
     let overlapScroll = true;
-    
+
     if (status_bar) {
       overlapScroll = statusBarWidget.overlapScroll;
       hideStatusBar();
     }
 
-    if (text) {      
-      
+    if (text) {
+
       if (language_id == 'xml') {
         language_id = 'xml';
         currentTheme = 'vs';
@@ -710,7 +722,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
           addExtraSpaceOnTop: false
         }
       });
-      editor.countDiffEvents = 0; 
+      editor.countDiffEvents = 0;
       editor.onDidUpdateDiff(e => {
         editor.countDiffEvents++;
         if (editor.countDiffEvents == 1 && getOption('generateCompareCompleteEvent'))
@@ -738,7 +750,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
         decor: [],
         line: 0,
         position: 0
-      };      
+      };
       editor.diffEditorUpdateDecorations = diffEditorUpdateDecorations;
       editor.markDiffLines = function () {
         setTimeout(() => {
@@ -769,14 +781,13 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       });
       setDefaultStyle();
     }
-    else
-    {
+    else {
       disposeEditor();
       createEditor(language_id, originalText, currentTheme);
       originalText = '';
       editor.diffCount = 0;
     }
-    
+
     editor.updateOptions({ readOnly: readOnlyMode });
     if (status_bar)
       showStatusBar(overlapScroll);
@@ -796,20 +807,20 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  triggerSuggestions = function() {
-    
+  triggerSuggestions = function () {
+
     editor.trigger('', 'editor.action.triggerSuggest', {});
 
   }
 
-  triggerHovers = function() {
-    
+  triggerHovers = function () {
+
     editor.trigger('', 'editor.action.showHover', {});
 
   }
 
-  showImmediateHover = function(text, title) {
-    
+  showImmediateHover = function (text, title) {
+
     immediateHover = [
       { value: title },
       { value: text }
@@ -818,8 +829,8 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  triggerSigHelp = function() {
-    
+  triggerSigHelp = function () {
+
     editor.trigger('', 'editor.action.triggerParameterHints', {});
 
   }
@@ -849,14 +860,14 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  showCustomSuggestions = function(suggestions) {
-    
+  showCustomSuggestions = function (suggestions) {
+
     customSuggestions = [];
-    
+
     try {
-            
+
       let suggestObj = JSON.parse(suggestions);
-      
+
       for (const [key, value] of Object.entries(suggestObj)) {
 
         customSuggestions.push({
@@ -874,11 +885,11 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
       triggerSuggestions();
       return true;
-      
-		}
-		catch (e) {
-			return { errorDescription: e.message };
-		}
+
+    }
+    catch (e) {
+      return { errorDescription: e.message };
+    }
 
   }
 
@@ -895,7 +906,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  nextDiff = function() {
+  nextDiff = function () {
 
     if (editor.navi) {
       editor.navi.next();
@@ -904,7 +915,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  previousDiff = function() {
+  previousDiff = function () {
 
     if (editor.navi) {
       editor.navi.previous();
@@ -913,33 +924,33 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  disableContextMenu = function() {
-    
+  disableContextMenu = function () {
+
     editor.updateOptions({ contextmenu: false });
     contextMenuEnabled = false;
 
   }
 
   scrollToTop = function () {
-    
+
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
 
   }
 
-  hideLineNumbers = function() {
-        
+  hideLineNumbers = function () {
+
     editor.updateOptions({ lineNumbers: false, lineDecorationsWidth: 0 });
 
   }
 
-  showLineNumbers = function() {
-        
+  showLineNumbers = function () {
+
     editor.updateOptions({ lineNumbers: true, lineDecorationsWidth: 10 });
-    
+
   }
 
-  clearMetadata = function() {
+  clearMetadata = function () {
 
     metadataRequests.clear();
 
@@ -952,39 +963,39 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  hideScroll = function(type) {
+  hideScroll = function (type) {
 
     document.getElementsByTagName('body')[0].style[type] = 'hidden';
     document.getElementById('container').style[type] = 'hidden';
 
   }
 
-  hideScrollX = function() {
+  hideScrollX = function () {
 
     hideScroll('overflowX');
 
   }
 
-  hideScrollY = function() {
+  hideScrollY = function () {
 
     hideScroll('overflowY');
 
   }
 
-  getTokenFromPosition = function(position) {
+  getTokenFromPosition = function (position) {
 
     let bsl = new bslHelper(editor.getModel(), position);
     return bsl.getLastToken();
 
   }
 
-  getLastToken = function() {
+  getLastToken = function () {
 
     return getTokenFromPosition(editor.getPosition());
 
   }
 
-  hideSuggestionsList = function() {
+  hideSuggestionsList = function () {
 
     editor.trigger("editor", "hideSuggestWidget"); // https://github.com/salexdv/bsl_console/issues/209
 
@@ -1000,75 +1011,75 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  hideHoverList = function() {
+  hideHoverList = function () {
 
     let hovers = document.querySelectorAll('.monaco-editor-hover .hover-row');
-    hovers.forEach(function(hover){
+    hovers.forEach(function (hover) {
       hover.remove();
     });
 
   }
 
-  openSearchWidget = function() {
-    
+  openSearchWidget = function () {
+
     getActiveEditor().trigger('', 'actions.find');
-    setFindWidgetDisplay('inherit');    
+    setFindWidgetDisplay('inherit');
     focusFindWidgetInput();
 
   }
 
-  closeSearchWidget = function() {
-    
+  closeSearchWidget = function () {
+
     getActiveEditor().trigger('', 'closeFindWidget')
     setFindWidgetDisplay('none');
 
   }
 
-  setFontSize = function(fontSize)  {
-    
-    editor.updateOptions({fontSize: fontSize});
+  setFontSize = function (fontSize) {
+
+    editor.updateOptions({ fontSize: fontSize });
 
   }
 
-  setFontFamily = function(fontFamily)  {
-    
-    editor.updateOptions({fontFamily: fontFamily});
+  setFontFamily = function (fontFamily) {
+
+    editor.updateOptions({ fontFamily: fontFamily });
 
   }
 
-  setFontWeight = function(fontWeight)  {
+  setFontWeight = function (fontWeight) {
 
-    editor.updateOptions({fontWeight: fontWeight});
-
-  }
-
-  setLineHeight = function(lineHeight) {
-
-    editor.updateOptions({lineHeight: lineHeight});
+    editor.updateOptions({ fontWeight: fontWeight });
 
   }
 
-  setLetterSpacing = function(letterSpacing) {
+  setLineHeight = function (lineHeight) {
 
-    editor.updateOptions({letterSpacing: letterSpacing});
+    editor.updateOptions({ lineHeight: lineHeight });
 
   }
 
-  renderWhitespace = function(enabled) {
+  setLetterSpacing = function (letterSpacing) {
+
+    editor.updateOptions({ letterSpacing: letterSpacing });
+
+  }
+
+  renderWhitespace = function (enabled) {
 
     let mode = enabled ? 'all' : 'none';
-    editor.updateOptions({renderWhitespace: mode});
+    editor.updateOptions({ renderWhitespace: mode });
 
   }
 
-  showStatusBar = function(overlapScroll = true) {
-    
+  showStatusBar = function (overlapScroll = true) {
+
     if (!statusBarWidget)
-      createStatusBarWidget(overlapScroll);    
+      createStatusBarWidget(overlapScroll);
 
   }
 
-  hideStatusBar = function() {
+  hideStatusBar = function () {
 
     if (statusBarWidget) {
       if (editor.navi)
@@ -1080,7 +1091,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  addBookmark = function(lineNumber) {
+  addBookmark = function (lineNumber) {
 
     if (lineNumber <= getLineCount()) {
 
@@ -1093,7 +1104,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
     }
     else {
-      
+
       editor.bookmarks.delete(lineNumber);
       return false;
 
@@ -1101,15 +1112,15 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  removeBookmark = function(lineNumber) {
+  removeBookmark = function (lineNumber) {
 
     if (lineNumber < getLineCount()) {
 
       let bookmark = editor.bookmarks.get(lineNumber);
 
       if (bookmark)
-        updateBookmarks(lineNumber);    
-      
+        updateBookmarks(lineNumber);
+
       return bookmark ? true : false;
 
     }
@@ -1122,7 +1133,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  removeAllBookmarks = function() {
+  removeAllBookmarks = function () {
 
     editor.bookmarks.clear();
     updateBookmarks();
@@ -1136,12 +1147,12 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  removeAllBreakpoints = function() {
+  removeAllBreakpoints = function () {
 
     editor.breakpoints.clear();
     editor.updateDecorations([]);
 
-  }  
+  }
 
   getBreakpoints = function () {
 
@@ -1151,25 +1162,25 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   }
 
   setCurrentDebugLine = function (line) {
-    
+
     editor.currentDebugLine.clear();
 
     debugLine = {
-        range: new monaco.Range(line, 1, line),
-        options: {
-            isWholeLine: true,
-            className: 'debug-line',
-          }
+      range: new monaco.Range(line, 1, line),
+      options: {
+        isWholeLine: true,
+        className: 'debug-line',
+      }
     }
-    
+
     pointer = {
       range: new monaco.Range(line, 1, line),
       options: {
-          isWholeLine: true,
-          linesDecorationsClassName: 'debug-line-pointer',
-          overviewRuler: {
-              position: 1
-          }
+        isWholeLine: true,
+        linesDecorationsClassName: 'debug-line-pointer',
+        overviewRuler: {
+          position: 1
+        }
       }
     }
 
@@ -1207,12 +1218,12 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     if (suggestWidget && i < suggestWidget.widget.list.view.items.length) {
 
       let suggest_item = suggestWidget.widget.list.view.items[i];
-      suggest_item.element.completion.detail = detailInList;      
-      
+      suggest_item.element.completion.detail = detailInList;
+
       if (documentation)
         suggest_item.element.completion.documentation = documentation;
-     
-      let detail_element = getChildWithClass(suggest_item.row.domNode,'details-label');
+
+      let detail_element = getChildWithClass(suggest_item.row.domNode, 'details-label');
 
       if (detail_element)
         detail_element.innerText = detailInList
@@ -1229,22 +1240,22 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       listRowDetail.innerText = detailInList;
 
     let sideDetailHeader = document.querySelector('.suggest-widget.docs-side .details .header');
-    
+
     if (sideDetailHeader) {
-      
+
       if (!detailInSide)
         detailInSide = detailInList;
 
       sideDetailHeader.innerText = detailInSide;
-      
-      let sideDetailElement = document.querySelector('.suggest-widget.docs-side .details');      
+
+      let sideDetailElement = document.querySelector('.suggest-widget.docs-side .details');
       let contentHeightInPixels = sideDetailHeader.scrollHeight;
       let viewportHeightInPixels = Math.min(maxSideHeightInPixels, contentHeightInPixels);
 
       sideDetailElement.style.height = viewportHeightInPixels.toString() + 'px';
 
     }
-    
+
   }
 
   hasTextFocus = function () {
@@ -1275,21 +1286,21 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
     // setTimeout(() => { // Асинхронное выполнение не совместимо со старым API и рождает много скрытых проблем https://github.com/salexdv/bsl_console/issues/297
 
-      editor[optionName] = optionValue;
-      editor_options[optionName] = optionValue;
+    editor[optionName] = optionValue;
+    editor_options[optionName] = optionValue;
 
-      if (optionName == 'generateBeforeSignatureEvent')
-        startStopSignatureObserver();
+    if (optionName == 'generateBeforeSignatureEvent')
+      startStopSignatureObserver();
 
-      if (optionName == 'generateSelectSuggestEvent')
-        startStopSuggestSelectionObserver();
+    if (optionName == 'generateSelectSuggestEvent')
+      startStopSuggestSelectionObserver();
 
-      if (optionName == 'disableDefinitionMessage')
-        startStopDefinitionMessegeObserver();
+    if (optionName == 'disableDefinitionMessage')
+      startStopDefinitionMessegeObserver();
 
-      if (optionName == 'generateSuggestActivationEvent')
-        startStopSuggestActivationObserver();
-        
+    if (optionName == 'generateSuggestActivationEvent')
+      startStopSuggestActivationObserver();
+
     // }, 10);
 
   }
@@ -1297,31 +1308,31 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   getOption = function (optionName) {
 
     return editor[optionName];
-    
+
   }
 
   disableKeyBinding = function (keybinding) {
 
     const bind_str = keybinding.toString();
     const key_name = 'kbinding_' + bind_str;
-  
+
     if (editor[key_name])
       editor[key_name].set(true);
     else
       editor[key_name] = editor.createContextKey(key_name, true);
 
-    editor.addCommand(keybinding, function() {sendEvent('EVENT_KEY_BINDING_' + bind_str)}, key_name);
+    editor.addCommand(keybinding, function () { sendEvent('EVENT_KEY_BINDING_' + bind_str) }, key_name);
 
   }
 
   enableKeyBinding = function (keybinding) {
-  
+
     const key_name = 'kbinding_' + keybinding;
     const context_key = editor[key_name];
-    
+
     if (context_key)
       context_key.set(false);
-    
+
   }
 
   jumpToBracket = function () {
@@ -1336,13 +1347,13 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  revealDefinition = function() {
+  revealDefinition = function () {
 
     editor.trigger('', 'editor.action.revealDefinition');
 
   }
 
-  peekDefinition = function() {
+  peekDefinition = function () {
 
     editor.trigger('', 'editor.action.peekDefinition');
 
@@ -1367,14 +1378,14 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   getOriginalText = function () {
 
-    return editor.originalText;    
+    return editor.originalText;
 
   }
 
   revealLineInCenter = function (lineNumber) {
 
     let line = Math.min(lineNumber, getLineCount())
-    editor.revealLineInCenter(lineNumber);    
+    editor.revealLineInCenter(lineNumber);
     editor.setPosition(new monaco.Position(line, 1));
 
   }
@@ -1386,27 +1397,27 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   }
 
   restoreViewState = function (state) {
-    
+
     try {
-			editor.restoreViewState(JSON.parse(state));
-			return true;
-		}
-		catch (e) {      
-			return { errorDescription: e.message };
-		}
+      editor.restoreViewState(JSON.parse(state));
+      return true;
+    }
+    catch (e) {
+      return { errorDescription: e.message };
+    }
 
   }
 
-  getDiffCount = function() {
+  getDiffCount = function () {
 
     return editor.diffCount ? editor.diffCount : 0;
 
   }
 
-  formatDocument = function() {
+  formatDocument = function () {
 
     editor.trigger('', 'editor.action.formatDocument');
-  
+
   }
 
   isSuggestWidgetVisible = function () {
@@ -1423,16 +1434,16 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  insertSnippet = function(snippet) {
+  insertSnippet = function (snippet) {
 
     let controller = editor.getContribution("snippetController2");
-    
+
     if (controller)
       controller.insert(snippet);
 
   }
 
-  parseSnippets = function(stData, unionSnippets = false) {
+  parseSnippets = function (stData, unionSnippets = false) {
 
     let parser = new SnippetsParser();
     parser.setStream(stData);
@@ -1451,18 +1462,18 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       return true;
 
     }
-    
+
     return false;
-    
+
   }
 
-  setDefaultSnippets = function() {
+  setDefaultSnippets = function () {
 
     snippets = bslSnippets;
 
   }
 
-  clearSnippets = function() {
+  clearSnippets = function () {
 
     snippets = {};
 
@@ -1502,7 +1513,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  getMarkers = function( ) {
+  getMarkers = function () {
 
     return getSortedMarkers();
 
@@ -1527,7 +1538,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     currentMarker--;
 
     if (currentMarker < 0)
-    currentMarker = sorted_markers.length - 1;
+      currentMarker = sorted_markers.length - 1;
 
     goToCurrentMarker(sorted_markers);
 
@@ -1552,31 +1563,31 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  fold = function() {
+  fold = function () {
 
     editor.trigger('', 'editor.fold');
 
   }
 
-  foldAll = function() {
+  foldAll = function () {
 
     editor.trigger('', 'editor.foldAll');
 
   }
 
-  unfold = function() {
+  unfold = function () {
 
     editor.trigger('', 'editor.unfold');
 
   }
 
-  unfoldAll = function() {
+  unfoldAll = function () {
 
     editor.trigger('', 'editor.unfoldAll');
 
   }
 
-  scale = function(direction) {
+  scale = function (direction) {
 
     if (direction == 0)
       editor.trigger('', 'editor.action.fontZoomReset');
@@ -1587,17 +1598,17 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  gotoLine = function() {
+  gotoLine = function () {
 
     editor.trigger('', 'editor.action.gotoLine');
     getQuickOpenWidget().widget.quickOpenWidget.inputElement.focus();
 
   }
 
-  showVariablesDescription = function(variablesJSON) {    
-    
+  showVariablesDescription = function (variablesJSON) {
+
     try {
-      
+
       if (treeview != null)
         hideVariablesDisplay();
 
@@ -1615,7 +1626,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  updateVariableDescription = function(variableId, variableJSON) { 
+  updateVariableDescription = function (variableId, variableJSON) {
 
     try {
 
@@ -1629,9 +1640,9 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       return { errorDescription: e.message };
     }
 
-  }   
-    
-  setDefaultStyle = function() {
+  }
+
+  setDefaultStyle = function () {
 
     setFontFamily("Courier New");
     setFontSize(14);
@@ -1640,13 +1651,13 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  setLineNumbersDecorations = function(decorations) {
+  setLineNumbersDecorations = function (decorations) {
 
     lineNumbersDedocrations = [];
     lineNumbersDedocrations.push();
 
     try {
-      
+
       const decor = JSON.parse(decorations);
       let length = 0;
       decor.forEach(function (value) {
@@ -1679,12 +1690,12 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       let modified_model = editor.modifiedEditor.getModel();
 
       diff.forEach(function (value) {
-                
+
         value["originalText"] = getTextInLines(original_model, value.originalStartLineNumber, value.originalEndLineNumber);
-        value["modifiedText"] = getTextInLines(modified_model, value.modifiedStartLineNumber, value.modifiedEndLineNumber);        
+        value["modifiedText"] = getTextInLines(modified_model, value.modifiedStartLineNumber, value.modifiedEndLineNumber);
 
         if (Array.isArray(value.charChanges)) {
-          
+
           value.charChanges.forEach(function (char) {
             char["originalText"] = getTextInRange(
               original_model,
@@ -1737,7 +1748,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  getReviewIssues = function() {
+  getReviewIssues = function () {
 
     issues = [];
 
@@ -1747,7 +1758,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
         endLineNumber: value.startLineNumber,
         date: value.date,
         author: value.author,
-        severity: value.severity,       
+        severity: value.severity,
         message: value.message
       }
       issues.push(issue);
@@ -1757,7 +1768,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  setReviewIssues = function(issuesJSON) {
+  setReviewIssues = function (issuesJSON) {
 
     try {
 
@@ -1778,7 +1789,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  startCodeReview = function(readOnlyCodeReview = false) {
+  startCodeReview = function (readOnlyCodeReview = false) {
 
     setOption('reviewMode', true);
     setOption('readOnlyCodeReview', readOnlyCodeReview);
@@ -1786,14 +1797,14 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  stopCodeReview = function() {
-    
+  stopCodeReview = function () {
+
     setOption('reviewMode', false);
     removeReviewWidgets();
 
   }
 
-  generateEventWithSuggestData = function(eventName, trigger, row, suggestRows = []) {
+  generateEventWithSuggestData = function (eventName, trigger, row, suggestRows = []) {
 
     let bsl = new bslHelper(editor.getModel(), editor.getPosition());
     let row_id = row ? row.getAttribute('data-index') : "";
@@ -1839,10 +1850,10 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  getLineNumber = function(originalLineNumber) {
+  getLineNumber = function (originalLineNumber) {
 
     if (getOption('reviewMode')) {
-      let standaloneEditor = editor;      
+      let standaloneEditor = editor;
       if (editor.navi)
         standaloneEditor = editor.getModifiedEditor();
       if (standaloneEditor.mousePosition && standaloneEditor.mousePosition.lineNumber == originalLineNumber) {
@@ -1857,7 +1868,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
         return str + getLineNumberMargin(originalLineNumber) + originalLineNumber;
       }
     }
-    
+
     return originalLineNumber;
 
   }
@@ -1866,7 +1877,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   // #region init editor
   editor = undefined;
 
-  createEditor = function(language_id, text, theme) {
+  createEditor = function (language_id, text, theme) {
 
     const container = document.getElementById("container");
 
@@ -1896,9 +1907,9 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
     changeCommandKeybinding('editor.action.revealDefinition', monaco.KeyCode.F12);
     changeCommandKeybinding('editor.action.peekDefinition', monaco.KeyMod.CtrlCmd | monaco.KeyCode.F12);
-    changeCommandKeybinding('editor.action.deleteLines',  monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_L);
-    changeCommandKeybinding('editor.action.selectToBracket',  monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KEY_B);
-    
+    changeCommandKeybinding('editor.action.deleteLines', monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_L);
+    changeCommandKeybinding('editor.action.selectToBracket', monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KEY_B);
+
     lineNumbersDedocrations = [];
 
     setDefaultStyle();
@@ -1909,26 +1920,26 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   function registerCodeLensProviders() {
 
     setTimeout(() => {
-  
+
       for (const [key, lang] of Object.entries(window.languages)) {
-        
+
         let language = lang.languageDef;
-  
+
         monaco.languages.registerCodeLensProvider(language.id, {
-          onDidChange: lang.codeLenses.onDidChange, 
-          provideCodeLenses: lang.codeLenses.provider, 
+          onDidChange: lang.codeLenses.onDidChange,
+          provideCodeLenses: lang.codeLenses.provider,
           resolveCodeLens: lang.codeLenses.resolver
         });
-  
+
       }
-  
+
     }, 50);
-  
+
   }
 
   // Register languages
   for (const [key, lang] of Object.entries(languages)) {
-  
+
     let language = lang.languageDef;
 
     monaco.languages.register({ id: language.id });
@@ -1938,17 +1949,17 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
     // Register providers for the new language
     monaco.languages.registerCompletionItemProvider(language.id, lang.completionProvider);
-    monaco.languages.registerFoldingRangeProvider(language.id, lang.foldingProvider);      
+    monaco.languages.registerFoldingRangeProvider(language.id, lang.foldingProvider);
     monaco.languages.registerSignatureHelpProvider(language.id, lang.signatureProvider);
-    monaco.languages.registerHoverProvider(language.id, lang.hoverProvider);    
+    monaco.languages.registerHoverProvider(language.id, lang.hoverProvider);
     monaco.languages.registerDocumentFormattingEditProvider(language.id, lang.formatProvider);
     monaco.languages.registerColorProvider(language.id, lang.colorProvider);
     monaco.languages.registerDefinitionProvider(language.id, lang.definitionProvider);
 
     if (lang.autoIndentation && lang.indentationRules)
-      monaco.languages.setLanguageConfiguration(language.id, {indentationRules: lang.indentationRules});
+      monaco.languages.setLanguageConfiguration(language.id, { indentationRules: lang.indentationRules });
 
-    monaco.languages.setLanguageConfiguration(language.id, {brackets: lang.brackets, autoClosingPairs: lang.autoClosingPairs});
+    monaco.languages.setLanguageConfiguration(language.id, { brackets: lang.brackets, autoClosingPairs: lang.autoClosingPairs });
 
     if (!editor) {
 
@@ -1960,7 +1971,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       createEditor(language.id, getCode(), 'bsl-white');
       registerCodeLensProviders();
       setDefaultSnippets();
-    
+
       if (editor) {
         contextMenuEnabled = editor.getRawOptions().contextmenu;
         editor.originalText = '';
@@ -1970,7 +1981,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     }
 
   };
-  
+
   for (const [action_id, action] of Object.entries(permanentActions)) {
     editor.addAction({
       id: action_id,
@@ -2040,15 +2051,15 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     }
 
     editor.onMouseMove(e => {
-      
+
       newReviewDecoration(e);
-              
+
     });
 
     editor.onKeyDown(e => editorOnKeyDown(e));
 
     editor.onDidChangeModelContent(e => {
-      
+
       calculateDiff();
 
       if (getOption('generateModificationEvent'))
@@ -2061,11 +2072,11 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       updateBreakpoints(undefined);
 
       setOption('lastContentChanges', e);
-          
+
     });
 
     editor.onKeyUp(e => {
-      
+
       if (e.ctrlKey)
         ctrlPressed = false;
 
@@ -2109,7 +2120,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
       if (element.classList.contains('diff-navi')) {
         createDiffWidget(e);
-      }    
+      }
 
       if (element.classList.contains('add-review')) {
         createReviewWidget(e.target.position.lineNumber);
@@ -2118,13 +2129,13 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     });
 
     editor.onDidScrollChange(e => {
-          
+
       if (e.scrollTop == 0) {
         scrollToTop();
       }
 
     });
-    
+
     editor.onDidType(text => {
 
       if (text === '\n') {
@@ -2145,7 +2156,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
     editor.onDidLayoutChange(e => {
 
-      setTimeout(() => { resizeStatusBar(); } , 50);
+      setTimeout(() => { resizeStatusBar(); }, 50);
 
     });
 
@@ -2155,15 +2166,15 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
   // #endregion
-    
+
   // #region non-public functions
   function mapsAreEqual(map1, map2) {
-    
+
     let testVal;
-    
+
     if (map1.size !== map2.size)
       return false;
-    
+
     for (let [key, val] of map1) {
       testVal = map2.get(key);
       if (testVal !== val || (testVal === undefined && !map2.has(key))) {
@@ -2178,13 +2189,13 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   function updateSelectedQueryDelimiters(e) {
 
     if (queryMode && editor.renderQueryDelimiters) {
-      
+
       let prevSelectedDelimiters = new Map(selectedQueryDelimiters);
       selectedQueryDelimiters = new Map();
       const matches = editor.getModel().findMatches('^\\s*;\\s*$', e.selection, true, false, null, true);
-      
+
       for (let idx = 0; idx < matches.length; idx++)
-        selectedQueryDelimiters.set(matches[idx].range.toString(), true);          
+        selectedQueryDelimiters.set(matches[idx].range.toString(), true);
 
       if (!mapsAreEqual(prevSelectedDelimiters, selectedQueryDelimiters)) {
         editor.updateDecorations([]);
@@ -2194,7 +2205,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  generateEscapeEvent = function() {
+  generateEscapeEvent = function () {
 
     let position = editor.getPosition();
     let bsl = new bslHelper(editor.getModel(), position);
@@ -2244,11 +2255,11 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   }
 
   function getLineNumberMargin(originalLineNumber) {
-    
+
     let margin = '';
-    const max_length =  lineNumbersDedocrations.length.toString().length;
+    const max_length = lineNumbersDedocrations.length.toString().length;
     const length = originalLineNumber.toString().length;
-    const nbsp = String.fromCharCode(160);    
+    const nbsp = String.fromCharCode(160);
 
     for (let x = length; x <= max_length; x++)
       margin += nbsp;
@@ -2257,7 +2268,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  disposeEditor = function() {
+  disposeEditor = function () {
 
     if (editor) {
 
@@ -2332,7 +2343,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   function onDidPaste(e) {
 
     if (isQueryMode() && !readOnlyMode) {
-      
+
       let text = editor.getModel().getValueInRange(e.range).trim();
       let text_changed = false;
 
@@ -2370,7 +2381,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     if (e.source == 'snippet' || e.source == 'api') {
 
       let text = editor.getModel().getValueInRange(e.selection);
-      
+
       let events = new Map();
       events.set('ТекстЗапроса', 'EVENT_QUERY_CONSTRUCT');
       events.set('ФорматнаяСтрока', 'EVENT_FORMAT_CONSTRUCT');
@@ -2406,10 +2417,10 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
     if (element) {
 
-      for (let i = 0; i < element.parentElement.childNodes.length; i++) {              
-        
+      for (let i = 0; i < element.parentElement.childNodes.length; i++) {
+
         let row = element.parentElement.childNodes[i];
-        
+
         if (row.classList.contains('monaco-list-row'))
           rows.push(row.getAttribute('aria-label'));
 
@@ -2420,7 +2431,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     return rows;
 
   }
-  
+
   function goToCurrentMarker(sorted_marks) {
 
     let idx = 0;
@@ -2467,14 +2478,14 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     return monaco.editor.getModelMarkers().sort((a, b) => a.startLineNumber - b.startLineNumber)
 
   }
-  
+
   function setModelMarkers(model, markers_array) {
-    
+
     let markers_data = [];
     currentMarker = -1;
-    
+
     markers_array.forEach(marker => {
-      
+
       let severity;
 
       switch (marker.severity) {
@@ -2527,7 +2538,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
         mutations.forEach(function (mutation) {
 
           if (mutation.target.classList.contains('overflowingContentWidgets') && mutation.addedNodes.length) {
-            
+
             let element = mutation.addedNodes[0];
 
             if (element.classList.contains('monaco-editor-overlaymessage') && element.classList.contains('fadeIn')) {
@@ -2678,7 +2689,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   }
 
   function changeCommandKeybinding(command, keybinding) {
-  
+
     editor._standaloneKeybindingService.addDynamicKeybinding('-' + command);
     editor._standaloneKeybindingService.addDynamicKeybinding(command, keybinding);
 
@@ -2693,15 +2704,15 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       const is_dark_theme = (0 <= current_theme.indexOf('dark'));
 
       for (let idx = 0; idx < matches.length; idx++) {
-      
+
         let color = '#f2f2f2';
-        let class_name  = 'query-delimiter';
+        let class_name = 'query-delimiter';
 
         if (is_dark_theme) {
           class_name = 'query-delimiter-dark';
           color = '#2d2d2d'
         }
-        
+
         let match = matches[idx];
 
         if (selectedQueryDelimiters.get(match.range.toString()))
@@ -2729,23 +2740,23 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   function getSuggestWidget() {
 
     return editor._contentWidgets['editor.widget.suggestWidget'];
-  
+
   }
 
   function getParameterHintsWidget() {
 
     return editor._contentWidgets['editor.widget.parameterHintsWidget'];
-  
+
   }
 
   function getFindWidget() {
-  
+
     return getActiveEditor()._overlayWidgets['editor.contrib.findWidget'];
 
   }
 
   function getQuickOpenWidget() {
-  
+
     return getActiveEditor()._overlayWidgets['editor.contrib.quickOpenEditorWidget'];
 
   }
@@ -2758,7 +2769,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
       href = element.innerText;
 
-  
+
       if (isForwardDirection && element.nextSibling || isForwardDirection == null)
         href += getNativeLinkHref(element.nextSibling, true);
 
@@ -2805,7 +2816,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
     if (diffDecor.position)
       decorations.push({ range: new monaco.Range(diffDecor.position, 1, diffDecor.position), options: { isWholeLine: true, linesDecorationsClassName: 'diff-editor-position' } });
-    
+
     if (standalone_editor.reviewDecorations)
       decorations = decorations.concat(standalone_editor.reviewDecorations);
 
@@ -2823,9 +2834,9 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   function newReviewDecoration(e) {
 
     if (getOption('reviewMode') && !getOption("readOnlyCodeReview") && e.target.position) {
-  
+
       let standaloneEditor = editor;
-      
+
       if (editor.navi)
         standaloneEditor = editor.getModifiedEditor();
 
@@ -2833,9 +2844,9 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       standaloneEditor.mousePosition = e.target.position;
       standaloneEditor.updateOptions({ lineNumbers: undefined });
       standaloneEditor.updateOptions({ lineNumbers: getLineNumber });
-  
+
       let range = new monaco.Range(e.target.position.lineNumber, 1, e.target.position.lineNumber, 1);
-          
+
       standaloneEditor.reviewDecorations.push({
         range: range,
         options: {
@@ -2843,12 +2854,12 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
           linesDecorationsClassName: 'add-review',
         }
       });
-      
+
       if (editor.navi)
         editor.diffEditorUpdateDecorations();
       else
         editor.updateDecorations(standaloneEditor.reviewDecorations);
-      
+
       setTimeout(() => {
         let lineElement = document.querySelector('.add-review');
         if (lineElement) {
@@ -2862,8 +2873,8 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   function diffEditorOnDidChangeCursorPosition(e) {
 
-    if (e.source != 'api') {      
-      
+    if (e.source != 'api') {
+
       editor.getModifiedEditor().diffDecor.position = 0;
       editor.getOriginalEditor().diffDecor.position = 0;
       getActiveDiffEditor().diffDecor.position = e.position.lineNumber;
@@ -2892,11 +2903,11 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   function diffEditorOnDidLayoutChange(e) {
 
-    setTimeout(() => { resizeStatusBar(); } , 50);
+    setTimeout(() => { resizeStatusBar(); }, 50);
 
   }
 
-  getActiveDiffEditor = function() {
+  getActiveDiffEditor = function () {
     let active_editor = null;
     if (editor.getModifiedEditor().hasTextFocus())
       active_editor = editor.getModifiedEditor();
@@ -2911,7 +2922,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     return active_editor;
   }
 
-  getActiveEditor = function() {
+  getActiveEditor = function () {
 
     return editor.navi ? getActiveDiffEditor() : editor;
 
@@ -2926,7 +2937,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     else if (e.keyCode == 9) {
       // Esc
       generateEscapeEvent();
-      closeSearchWidget();      
+      closeSearchWidget();
     }
     else if (e.keyCode == 61) {
       // F3
@@ -3035,9 +3046,9 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     }
 
     if (e.ctrlKey && e.keyCode == 83) {
-      e.preventDefault();    
+      e.preventDefault();
       if (editor.definitionBreadcrumbs.length) {
-        let position  = editor.definitionBreadcrumbs.pop();
+        let position = editor.definitionBreadcrumbs.pop();
         editor.revealLineInCenter(position.lineNumber);
         editor.setPosition(position);
       }
@@ -3062,7 +3073,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  function  initContextMenuActions() {
+  function initContextMenuActions() {
 
     contextActions.forEach(action => {
       action.dispose();
@@ -3071,7 +3082,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     const actions = getActions(version1C);
 
     for (const [action_id, action] of Object.entries(actions)) {
-      
+
       let menuAction = editor.addAction({
         id: action_id,
         label: action.label,
@@ -3081,7 +3092,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
         contextMenuGroupId: 'navigation',
         contextMenuOrder: action.order,
         run: action.callback
-      });      
+      });
 
       contextActions.push(menuAction)
     }
@@ -3101,7 +3112,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       const char = model.getValueInRange(new monaco.Range(line - 1, column - 1, line - 1, column));
       const token = getTokenFromPosition(new monaco.Position(line - 1, column));
 
-      if (token == 'stringbsl' ||0 <= token.indexOf('string.invalid') || 0 <= token.indexOf('query') || char == '|') {
+      if (token == 'stringbsl' || 0 <= token.indexOf('string.invalid') || 0 <= token.indexOf('query') || char == '|') {
 
         if (token != 'query.quotebsl' || char == '|') {
 
@@ -3138,7 +3149,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     if (element.className && 0 <= element.className.split(' ').indexOf(className))
       return element;
 
-    if (element.parentNode)    
+    if (element.parentNode)
       return getParentWithClass(element.parentNode, className);
     else
       return null;
@@ -3148,7 +3159,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   function getChildWithClass(element, className) {
 
     for (var i = 0; i < element.childNodes.length; i++) {
-      
+
       let child = element.childNodes[i];
 
       if (child.className && 0 <= child.className.split(' ').indexOf(className))
@@ -3165,10 +3176,10 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   }
 
-  setFindWidgetDisplay = function(value) {
+  setFindWidgetDisplay = function (value) {
 
     let find_widget = getFindWidget();
-    
+
     if (find_widget)
       find_widget.widget._domNode.style.display = value;
 
@@ -3177,7 +3188,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   function setFindWidgetDisplay(value) {
 
     let find_widget = getFindWidget();
-    
+
     if (find_widget)
       find_widget.widget._domNode.style.display = value;
 
@@ -3190,20 +3201,20 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     if (find_widget)
       find_widget.widget.focusFindInput();
 
-  }  
+  }
 
   function updateStatusBar() {
-    
+
     if (statusBarWidget) {
-      
+
       let status = '';
 
       if (editor.navi) {
         let standalone_editor = getActiveDiffEditor();
         status = 'Ln ' + standalone_editor.getPosition().lineNumber;
-        status += ', Col ' + standalone_editor.getPosition().column;                
+        status += ', Col ' + standalone_editor.getPosition().column;
       }
-      else {        
+      else {
         status = 'Ln ' + getCurrentLine();
         status += ', Col ' + getCurrentColumn();
       }
@@ -3225,7 +3236,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       if (statusBarWidget.overlapScroll) {
         element.style.top = editor.getDomNode().clientHeight - 20 + 'px';
       }
-      else {        
+      else {
         let layout = getActiveEditor().getLayoutInfo();
         element.style.top = (editor.getDomNode().offsetHeight - 20 - layout.horizontalScrollbarHeight) + 'px';
       }
@@ -3463,7 +3474,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   }
 
   function isDiffEditorHasChanges() {
-    
+
     return diffEditor.getOriginalEditor().getValue() != diffEditor.getModifiedEditor().getValue();
 
   }
@@ -3471,23 +3482,23 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   function getDiffChanges() {
 
     const changes = diffEditor.getLineChanges();
-  
+
     if (Array.isArray(changes)) {
-  
+
       editor.diffCount = changes.length;
       editor.diff_decorations = [];
-  
+
       if (isDiffEditorHasChanges()) {
 
         changes.forEach(function (e) {
-    
+
           const startLineNumber = e.modifiedStartLineNumber;
           const endLineNumber = e.modifiedEndLineNumber || startLineNumber;
-    
+
           let color = '#f8a62b';
           let class_name = 'diff-changed';
           let range = new monaco.Range(startLineNumber, 1, endLineNumber, 1);
-    
+
           if (e.originalEndLineNumber === 0) {
             color = '#10aa00';
             class_name = 'diff-new';
@@ -3496,7 +3507,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
             class_name = 'diff-removed';
             range = new monaco.Range(startLineNumber, Number.MAX_VALUE, startLineNumber, Number.MAX_VALUE);
           }
-    
+
           editor.diff_decorations.push({
             range: range,
             options: {
@@ -3512,12 +3523,12 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
         });
 
       }
-  
+
       editor.updateDecorations([]);
       editor.diffTimer = 0;
-  
+
     }
-  
+
   }
 
   function calculateDiff() {
@@ -3528,7 +3539,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
         clearTimeout(editor.diffTimer);
 
       editor.diffTimer = setTimeout(() => {
-                
+
         if (!diffEditor) {
           diffEditor = monaco.editor.createDiffEditor(document.createElement("div"));
           diffEditor.onDidUpdateDiff(() => {
@@ -3598,11 +3609,11 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     updateStatusBar();
 
   }
-  
+
   function createDiffWidget(e) {
 
     if (inlineDiffWidget) {
-      
+
       editor.removeDiffWidget();
 
     }
@@ -3610,9 +3621,9 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
       let element = e.target.element;
       let line_number = e.target.position.lineNumber;
-      
+
       let reveal_line = false;
-      
+
       if (line_number == getLineCount()) {
         line_number--;
         reveal_line = true;
@@ -3644,7 +3655,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
           onDomNodeTop: function (top) {
             if (inlineDiffWidget) {
               let layout = editor.getLayoutInfo();
-              inlineDiffWidget.domNode.style.top = top + 'px';          
+              inlineDiffWidget.domNode.style.top = top + 'px';
               inlineDiffWidget.domNode.style.width = (layout.contentWidth - layout.verticalScrollbarWidth) + 'px';
             }
           }
@@ -3670,7 +3681,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
               let diff_zone = document.getElementById('diff-zone');
               let rect = diff_zone.getBoundingClientRect();
 
-              this.domNode.style.left = layout.decorationsLeft  + layout.decorationsWidth + 'px';
+              this.domNode.style.left = layout.decorationsLeft + layout.decorationsWidth + 'px';
               this.domNode.style.top = rect.top + 'px';
               this.domNode.style.height = rect.height + 'px';
               this.domNode.style.width = (layout.contentWidth - layout.verticalScrollbarWidth) + 'px';
@@ -3684,7 +3695,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
               if (0 <= currentTheme.indexOf('dark'))
                 header.classList.add('dark');
 
-              header.innerText = engLang ? 'changes': 'изменения';
+              header.innerText = engLang ? 'changes' : 'изменения';
 
               let close_button = document.createElement('div');
               close_button.classList.add('diff-close');
@@ -3695,12 +3706,12 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
               let body = document.createElement('div');
               body.classList.add('diff-body');
-              body.classList.add(class_name);            
+              body.classList.add(class_name);
               this.domNode.appendChild(body);
 
               setTimeout(() => {
 
-                let language_id = getCurrentLanguageId();              
+                let language_id = getCurrentLanguageId();
 
                 inlineDiffEditor = monaco.editor.createDiffEditor(body, {
                   theme: currentTheme,
@@ -3753,16 +3764,16 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   }
 
   function createReviewWidget(lineNumber, issue = null) {
-      
+
     let startLineNumber = lineNumber;
     let widgetId = 'bsl.review.widget.' + startLineNumber;
-    
+
     if (reviewWidgets.get(widgetId))
       return;
 
     let standaloneEditor = editor.navi ? editor.getModifiedEditor() : editor;
 
-    let reviewWidget = {      
+    let reviewWidget = {
       widgetId: widgetId,
       domNode: null,
       getId: function () {
@@ -3796,13 +3807,13 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
           let reviewTitle = this.domNode.getElementsByClassName("review-title")[0];
           let date = new Date(Date.now());
           function addZero(num) {
-              return ("0" + num).slice(-2)
+            return ("0" + num).slice(-2)
           }
           let year = date.getFullYear(),
-              month = addZero(date.getMonth() + 1),
-              day = addZero(date.getDate()),
-              hours = addZero(date.getHours()),
-              minutes = addZero(date.getMinutes());
+            month = addZero(date.getMonth() + 1),
+            day = addZero(date.getDate()),
+            hours = addZero(date.getHours()),
+            minutes = addZero(date.getMinutes());
           let issueDate = `${day}.${month}.${year} ${hours}:${minutes}`;
           if (!reviewTitle.innerHTML) {
             reviewTitle.innerHTML = issueDate;
@@ -3854,20 +3865,20 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       },
       load(issue) {
         if (issue) {
-            this.domNode.classList.add('review-' + issue.severity);
-            let title = this.domNode.getElementsByClassName("review-title")[0];
-            title.innerHTML = issue.date;
-            if (issue.author)
-              title.innerHTML += ' @' + issue.author;
-            this.domNode.getElementsByClassName('review-text')[0].innerHTML = issue.message;
-            this.domNode.getElementsByTagName('textarea')[0].value = issue.message;
-            this.domNode.querySelector('.severity label .' + issue.severity).previousSibling.checked = true;
-            let widget = reviewWidgets.get(this.widgetId);
-            widget.date = issue.date;
-            widget.author = issue.author;
-            widget.message = issue.message;
-            widget.severity = issue.severity;
-            this.close();
+          this.domNode.classList.add('review-' + issue.severity);
+          let title = this.domNode.getElementsByClassName("review-title")[0];
+          title.innerHTML = issue.date;
+          if (issue.author)
+            title.innerHTML += ' @' + issue.author;
+          this.domNode.getElementsByClassName('review-text')[0].innerHTML = issue.message;
+          this.domNode.getElementsByTagName('textarea')[0].value = issue.message;
+          this.domNode.querySelector('.severity label .' + issue.severity).previousSibling.checked = true;
+          let widget = reviewWidgets.get(this.widgetId);
+          widget.date = issue.date;
+          widget.author = issue.author;
+          widget.message = issue.message;
+          widget.severity = issue.severity;
+          this.close();
         }
       },
       createSeverityButton(className, title, lineNumber, group) {
@@ -3878,15 +3889,15 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
         if (!group.hasChildNodes())
           input.setAttribute('checked', '');
         label.appendChild(input);
-        let span = document.createElement('span');          
+        let span = document.createElement('span');
         span.classList.add(className);
         span.innerHTML = title;
-        span.onclick = function() {
+        span.onclick = function () {
           let inputs = this.parentElement.parentElement.querySelectorAll('input');
           for (let x = 0; x < inputs.length; x++) {
             inputs[x].checked = false;
           }
-          this.parentElement.querySelector('input').checked = true;          
+          this.parentElement.querySelector('input').checked = true;
         }
         label.appendChild(span);
         group.appendChild(label);
@@ -3894,10 +3905,10 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       getDomNode: function () {
 
         if (!this.domNode) {
-          
+
           this.domNode = document.createElement('div');
           this.domNode.classList.add('review-body');
-        
+
           let header = document.createElement('div');
           header.classList.add('review-header');
           if (issue)
@@ -3920,7 +3931,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
           button = document.createElement('div');
           button.classList.add('review-modify');
           button.setAttribute('widgetid', widgetId);
-          button.onclick = function() {
+          button.onclick = function () {
             reviewWidgets.get(this.getAttribute("widgetid")).widget.edit();
           }
           buttons.appendChild(button);
@@ -3935,7 +3946,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
                 stickyFooter: false,
                 closeMethods: [],
                 widgetid: this.getAttribute("widgetid")
-              });              
+              });
               modal.setContent('<h3>Удалить замечание?</h3>');
               modal.addFooterBtn('Да', 'tingle-btn tingle-btn--primary', function () {
                 reviewWidgets.get(modal.opts.widgetid).widget.delete();
@@ -3953,7 +3964,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
           let text = document.createElement('div');
           text.classList.add('review-text');
           this.domNode.appendChild(text);
-          
+
           if (issue)
             text.style.display = 'block';
           else
@@ -3967,16 +3978,16 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
           let div = document.createElement('div');
           div.classList.add('severity');
 
-          let group = document.createElement('div');          
+          let group = document.createElement('div');
           div.appendChild(group)
           this.createSeverityButton('error', 'Ошибка', lineNumber, group);
           this.createSeverityButton('warning', 'Предупреждение', lineNumber, group);
           this.createSeverityButton('info', 'Информация', lineNumber, group);
           this.createSeverityButton('hint', 'Подсказка', lineNumber, group);
-          editGroup.appendChild(div);          
-          
+          editGroup.appendChild(div);
+
           let textarea = document.createElement('textarea');
-          textarea.oninput = function() {
+          textarea.oninput = function () {
             this.classList.remove('required');
           }
           textarea.classList.add('review-message');
@@ -3987,17 +3998,17 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
             button.setAttribute('widgetid', widgetId);
             button.classList.add('review-save');
             button.innerHTML = "Сохранить"
-            button.onclick = function() {
+            button.onclick = function () {
               reviewWidgets.get(this.getAttribute("widgetid")).widget.save();
             }
             editGroup.appendChild(button);
           }
-          
+
           button = document.createElement('button');
           button.setAttribute('widgetid', widgetId);
           button.classList.add('review-cancel');
           button.innerHTML = "Отмена"
-          button.onclick = function() {
+          button.onclick = function () {
             reviewWidgets.get(this.getAttribute("widgetid")).widget.cancel();
           }
           editGroup.appendChild(button);
@@ -4009,7 +4020,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       getPosition: function () {
         return null;
       }
-    };    
+    };
 
     standaloneEditor.changeViewZones(function (changeAccessor) {
 
@@ -4024,7 +4035,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
         domNode: domNode,
         widget: reviewWidget,
         showInHiddenAreas: false,
-        onDomNodeTop: function (top) {          
+        onDomNodeTop: function (top) {
           if (this.widget.domNode) {
             let layout = standaloneEditor.getLayoutInfo();
             let scrollWidth = editor.navi ? layout.verticalScrollbarWidth * 2 : layout.verticalScrollbarWidth;
@@ -4037,7 +4048,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
         get heightInPx() {
           if (this.widget.domNode)
             return this.widget.domNode.offsetHeight;
-        }        
+        }
       });
 
       reviewWidgets.set(widgetId, {
@@ -4047,11 +4058,11 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       });
 
       standaloneEditor.layout();
-      setTimeout(() => {reviewWidget.load(issue)}, 10);
+      setTimeout(() => { reviewWidget.load(issue) }, 10);
 
-    }); 
+    });
 
-    standaloneEditor.addOverlayWidget(reviewWidget);    
+    standaloneEditor.addOverlayWidget(reviewWidget);
 
   }
 
@@ -4063,7 +4074,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
     let standaloneEditor = editor.navi ? editor.getModifiedEditor() : editor;
     standaloneEditor.reviewDecorations = [];
-        
+
     if (editor.navi)
       editor.diffEditorUpdateDecorations();
     else
@@ -4081,12 +4092,12 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     let issueLine = sortedIssues[currentIssue];
 
     if (issueLine <= lineCount) {
-      
+
       let smoothScrolling = standaloneEditor.getOption(monaco.editor.EditorOption.smoothScrolling);
       standaloneEditor.updateOptions({ smoothScrolling: true });
-      standaloneEditor.revealRangeAtTop(new monaco.Range(issueLine, 1, issueLine, 1), 0);      
-      setTimeout(() => {      
-        standaloneEditor.setPosition(new monaco.Position(issueLine, 1));      
+      standaloneEditor.revealRangeAtTop(new monaco.Range(issueLine, 1, issueLine, 1), 0);
+      setTimeout(() => {
+        standaloneEditor.setPosition(new monaco.Position(issueLine, 1));
         standaloneEditor.updateOptions({ smoothScrolling: smoothScrolling });
       }, 50);
     }
@@ -4117,11 +4128,11 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     });
 
   }
-  
+
   function onSuggestListMouseOver(activationEventEnabled) {
 
     return; // Disabled until fix https://github.com/salexdv/bsl_console/issues/190
-    
+
     let widget = getSuggestWidget().widget;
 
     if (activationEventEnabled) {
@@ -4188,7 +4199,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   }
 
   function hideVariablesDisplay() {
-    
+
     document.getElementById("container").style.height = "100%";
     getActiveEditor().layout();
     let element = document.getElementById("display");
@@ -4256,17 +4267,17 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   };
 
-  window.addEventListener('resize', function(event) {
-    
+  window.addEventListener('resize', function (event) {
+
     if (editor.autoResizeEditorLayout)
       editor.layout();
     else
-      resizeStatusBar();    
-    
+      resizeStatusBar();
+
   }, true);
 
-  document.getElementById("display-close").addEventListener("click", (event) => {    
-    
+  document.getElementById("display-close").addEventListener("click", (event) => {
+
     hideVariablesDisplay();
 
   });
