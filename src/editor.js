@@ -56,9 +56,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       return false;
     }
 
-    window.editor.updateOptions({minimap: {enabled} });
-    
-    return true;
+    editor.updateOptions({minimap: {enabled} });
   };
 
   window.AppApi.getText = function () {
