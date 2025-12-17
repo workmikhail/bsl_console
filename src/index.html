@@ -66,13 +66,13 @@
         method,
         args
       );
-      if (typeof window[method] !== "function") {
+      if (!window.AppApi || typeof window.AppApi[method] !== "function") {
         console.error("Method not found:", method);
         return;
       }
 
       try {
-        window[method](...(args || []));
+        window.AppApi[method](...(args || []));
       } catch (err) {
         console.error("Error executing method:", method, err);
       }
