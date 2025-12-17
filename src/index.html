@@ -46,7 +46,27 @@
   <script src="./bsl_helper.js"></script>
   <script src="./init.js"></script>
   <script src="./tree/tree.js"></script>
+  <script>
+    window.addEventListener("message", (e) => {
+      if (e.origin !== "https://github.com/workmikhail") return;
 
+      const data = e.data;
+      if (!data || data.type !== "call") return;
+
+      const { method, args } = data;
+
+      if (typeof window[method] !== "function") {
+        console.error("Method not found:", method);
+        return;
+      }
+
+      try {
+        window[method](...(args || []));
+      } catch (err) {
+        console.error("Error executing method:", method, err);
+      }
+    });
+  </script>
 </body>
 
 </html>
