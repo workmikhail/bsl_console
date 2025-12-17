@@ -48,13 +48,24 @@
   <script src="./tree/tree.js"></script>
   <script>
     window.addEventListener("message", (e) => {
-      if (e.origin !== "https://github.com/workmikhail") return;
+      console.log(
+        "[IFRAME] message received",
+        e.data,
+        "from",
+        e.origin
+      );
+
+      //if (e.origin !== "https://github.com/workmikhail") return;
 
       const data = e.data;
       if (!data || data.type !== "call") return;
 
       const { method, args } = data;
-
+      console.log(
+        "[IFRAME] call request",
+        method,
+        args
+      );
       if (typeof window[method] !== "function") {
         console.error("Method not found:", method);
         return;
