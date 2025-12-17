@@ -51,6 +51,9 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   window.AppApi = window.AppApi || {};
 
   window.AppApi.setMinimap = function (enabled) {
+    console.log(
+        "[setMinimap] call check"
+      );
     if (!window.editor) {
       console.warn("Editor not ready yet");
       return false;
