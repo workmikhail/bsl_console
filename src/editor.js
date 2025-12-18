@@ -52,8 +52,32 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   window.AppApi.setMinimap = function (enabled) {
     console.log(
-        "[setMinimap] call check"
-      );
+      "[setMinimap] call check"
+    );
+    if (!window.editor) {
+      console.warn("Editor not ready yet");
+      return false;
+    }
+
+    window.editor.updateOptions({minimap: {enabled} });
+  };
+
+  window.AppApi.setMinimap1 = function (enabled) {
+    console.log(
+      "[setMinimap1] call check"
+    );
+    if (!window.editor) {
+      console.warn("Editor not ready yet");
+      return false;
+    }
+
+    editor.updateOptions({minimap: {enabled} });
+  };
+
+  window.AppApi.setMinimap2 = function (enabled) {
+    console.log(
+      "[setMinimap2] call check"
+    );
     if (!window.editor) {
       console.warn("Editor not ready yet");
       return false;
