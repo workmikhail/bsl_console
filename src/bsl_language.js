@@ -82,12 +82,12 @@ define([], function () {
                 { token: 'commentbsl', foreground: '96aa96' },
                 { token: 'keywordbsl', foreground: 'ff9191' },
                 { token: 'delimiterbsl', foreground: 'd4d4d4' },
-                { token: 'delimiter.squarebsl', foreground: 'd4d4d4' },
-                { token: 'delimiter.parenthesisbsl', foreground: 'd4d4d4' },
+                { token: 'delimiter.squarebsl', foreground: '9bccdd' },
+                { token: 'delimiter.parenthesisbsl', foreground: '96ddbd' },
                 { token: 'identifierbsl', foreground: '96b4ff' },
                 { token: 'funcbsl', foreground: 'cc9191' },
-                { token: 'funcdefbsl', foreground: 'ff9979' },
-                { token: 'constructbsl', foreground: 'fffa7a' },
+                { token: 'funcdefbsl', foreground: 'fffa7a' },
+                { token: 'constructbsl', foreground: 'e4b4ff' },
                 { token: 'stringbsl', foreground: 'dcdcdc' },
                 { token: 'string.quotebsl', foreground: 'acacac' },
                 { token: 'string.invalidbsl', foreground: 'ffdcdc' },
@@ -95,7 +95,7 @@ define([], function () {
                 { token: 'number.floatbsl', foreground: '64eb64' },
                 { token: 'preprocbsl', foreground: 'c8b400' },
                 { token: 'compilebsl', foreground: 'c8b400' },
-                { token: 'gotomarkbsl', foreground: 'ff9000' }
+                { token: 'gotomarkbsl', foreground: 'ffc180' }
             ],
             darkQueryOff: [
                 { token: 'querybsl', foreground: 'c3602c' },                    
@@ -188,7 +188,7 @@ define([], function () {
             dark: {
                 'foreground': '#d4d4d4',
                 'editor.background': '#252f3d',
-                'editor.selectionBackground': '#062f4a',
+                'editor.selectionBackground': '#C0CAD8',
                 'editor.selectionHighlightBackground': '#495662',
                 'editor.inactiveSelectionBackground': '#495662',
                 'editorCursor.foreground': '#d4d4d4',
