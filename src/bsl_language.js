@@ -86,7 +86,7 @@ define([], function () {
                 { token: 'delimiter.parenthesisbsl', foreground: '96ddbd' },
                 { token: 'identifierbsl', foreground: '96b4ff' },
                 { token: 'funcbsl', foreground: 'fffa7a' },
-                { token: 'funcdefbsl', foreground: '92a3cc' },
+                { token: 'funcdefbsl', foreground: '96b4ff' },
                 { token: 'constructbsl', foreground: 'e4b4ff' },
                 { token: 'stringbsl', foreground: 'dcdcdc' },
                 { token: 'string.quotebsl', foreground: 'acacac' },
