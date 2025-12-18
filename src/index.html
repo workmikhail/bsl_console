@@ -76,7 +76,7 @@
         result = window.AppApi[method](...(args || []));
       } catch (err) {
         console.error("Error executing method:", method, err);
-        result = null;
+        result = undefined;
       }
       if (result !== undefined) {
         e.source.postMessage({
