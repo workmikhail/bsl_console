@@ -48,51 +48,6 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   // #endregion
 
   // #region public API
-  window.AppApi = window.AppApi || {};
-
-  window.AppApi.setMinimap = function (enabled) {
-    console.log(
-      "[setMinimap] call check"
-    );
-    if (!window.editor) {
-      console.warn("Editor not ready yet");
-      return false;
-    }
-
-    window.editor.updateOptions({minimap: {enabled} });
-  };
-
-  window.AppApi.setMinimap1 = function (enabled) {
-    console.log(
-      "[setMinimap1] call check"
-    );
-    if (!window.editor) {
-      console.warn("Editor not ready yet");
-      return false;
-    }
-
-    editor.updateOptions({minimap: {enabled} });
-  };
-
-  window.AppApi.setMinimap2 = function (enabled) {
-    console.log(
-      "[setMinimap2] call check"
-    );
-    if (!window.editor) {
-      console.warn("Editor not ready yet");
-      return false;
-    }
-
-    editor.updateOptions({minimap: {enabled} });
-  };
-
-  window.AppApi.getText = function () {
-    if (!window.editor) {
-      return "";
-    }
-    return window.editor.getValue();
-  };
-  
   wordWrap = function (enabled) {
 
     if (editor.navi) {
@@ -4316,5 +4271,165 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   });
   // #endregion
 
+  // #region AppApi init
+  window.AppApi = window.AppApi || {};
+  window.AppApi.wordWrap = wordWrap
+  window.AppApi.reserMark = reserMark
+  window.AppApi.sendEvent = sendEvent
+  window.AppApi.setText = setText
+  window.AppApi.updateText = updateText
+  window.AppApi.setContent = setContent
+  window.AppApi.eraseText = eraseText
+  window.AppApi.getText = getText
+  window.AppApi.getQuery = getQuery
+  window.AppApi.getFormatString = getFormatString
+  window.AppApi.updateMetadata = updateMetadata
+  window.AppApi.parseCommonModule = parseCommonModule
+  window.AppApi.parseMetadataModule = parseMetadataModule
+  window.AppApi.updateSnippets = updateSnippets
+  window.AppApi.updateCustomFunctions = updateCustomFunctions
+  window.AppApi.setTheme = setTheme
+  window.AppApi.setReadOnly = setReadOnly
+  window.AppApi.getReadOnly = getReadOnly
+  window.AppApi.switchLang = switchLang
+  window.AppApi.addComment = addComment
+  window.AppApi.removeComment = removeComment
+  window.AppApi.markError = markError
+  window.AppApi.findText = findText
+  window.AppApi.init = init
+  window.AppApi.enableQuickSuggestions = enableQuickSuggestions
+  window.AppApi.minimap = minimap
+  window.AppApi.addContextMenuItem = addContextMenuItem
+  window.AppApi.isQueryMode = isQueryMode
+  window.AppApi.isDCSMode = isDCSMode
+  window.AppApi.setLanguageMode = setLanguageMode
+  window.AppApi.setDebugMode = setDebugMode
+  window.AppApi.isDebugMode = isDebugMode
+  window.AppApi.setUsingDebugger = setUsingDebugger
+  window.AppApi.isUsingDebugger = isUsingDebugger
+  window.AppApi.getCurrentLanguageId = getCurrentLanguageId
+  window.AppApi.getSelectedText = getSelectedText
+  window.AppApi.addWordWrap = addWordWrap
+  window.AppApi.removeWordWrap = removeWordWrap
+  window.AppApi.setCustomHovers = setCustomHovers
+  window.AppApi.setCustomSignatures = setCustomSignatures
+  window.AppApi.setCustomCodeLenses = setCustomCodeLenses
+  window.AppApi.getVarsNames = getVarsNames
+  window.AppApi.getSelection = getSelection
+  window.AppApi.setSelection = setSelection
+  window.AppApi.setSelectionByLength = setSelectionByLength
+  window.AppApi.selectedText = selectedText
+  window.AppApi.getLineCount = getLineCount
+  window.AppApi.getLineContent = getLineContent
+  window.AppApi.getCurrentLineContent = getCurrentLineContent
+  window.AppApi.getCurrentLine = getCurrentLine
+  window.AppApi.getCurrentColumn = getCurrentColumn
+  window.AppApi.setLineContent = setLineContent
+  window.AppApi.insertLine = insertLine
+  window.AppApi.addLine = addLine
+  window.AppApi.deleteLine = deleteLine
+  window.AppApi.getPositionOffset = getPositionOffset
+  window.AppApi.setDiffSideBySideMode = setDiffSideBySideMode
+  window.AppApi.compare = compare
+  window.AppApi.triggerSuggestions = triggerSuggestions
+  window.AppApi.triggerHovers = triggerHovers
+  window.AppApi.showImmediateHover = showImmediateHover
+  window.AppApi.triggerSigHelp = triggerSigHelp
+  window.AppApi.requestMetadata = requestMetadata
+  window.AppApi.showCustomSuggestions = showCustomSuggestions
+  window.AppApi.showPreviousCustomSuggestions = showPreviousCustomSuggestions
+  window.AppApi.nextDiff = nextDiff
+  window.AppApi.previousDiff = previousDiff
+  window.AppApi.disableContextMenu = disableContextMenu
+  window.AppApi.scrollToTop = scrollToTop
+  window.AppApi.hideLineNumbers = hideLineNumbers
+  window.AppApi.showLineNumbers = showLineNumbers
+  window.AppApi.clearMetadata = clearMetadata
+  window.AppApi.hideScroll = hideScroll
+  window.AppApi.hideScrollX = hideScrollX
+  window.AppApi.hideScrollY = hideScrollY
+  window.AppApi.getTokenFromPosition = getTokenFromPosition
+  window.AppApi.getLastToken = getLastToken
+  window.AppApi.hideSuggestionsList = hideSuggestionsList
+  window.AppApi.hideSignatureList = hideSignatureList
+  window.AppApi.hideHoverList = hideHoverList
+  window.AppApi.openSearchWidget = openSearchWidget
+  window.AppApi.closeSearchWidget = closeSearchWidget
+  window.AppApi.setFontSize = setFontSize
+  window.AppApi.setFontFamily = setFontFamily
+  window.AppApi.setFontWeight = setFontWeight
+  window.AppApi.setLineHeight = setLineHeight
+  window.AppApi.setLetterSpacing = setLetterSpacing
+  window.AppApi.renderWhitespace = renderWhitespace
+  window.AppApi.showStatusBar = showStatusBar
+  window.AppApi.hideStatusBar = hideStatusBar
+  window.AppApi.addBookmark = addBookmark
+  window.AppApi.removeBookmark = removeBookmark
+  window.AppApi.removeAllBookmarks = removeAllBookmarks
+  window.AppApi.getBookmarks = getBookmarks
+  window.AppApi.removeAllBreakpoints = removeAllBreakpoints
+  window.AppApi.getBreakpoints = getBreakpoints
+  window.AppApi.setCurrentDebugLine = setCurrentDebugLine
+  window.AppApi.deleteCurrentDebugLine = deleteCurrentDebugLine
+  window.AppApi.setActiveSuggestLabel = setActiveSuggestLabel
+  window.AppApi.setSuggestItemDetailById = setSuggestItemDetailById
+  window.AppApi.setActiveSuggestDetail = setActiveSuggestDetail
+  window.AppApi.hasTextFocus = hasTextFocus
+  window.AppApi.setActiveSuggestionAcceptors = setActiveSuggestionAcceptors
+  window.AppApi.nextMatch = nextMatch
+  window.AppApi.previousMatch = previousMatch
+  window.AppApi.setOption = setOption
+  window.AppApi.getOption = getOption
+  window.AppApi.disableKeyBinding = disableKeyBinding
+  window.AppApi.enableKeyBinding = enableKeyBinding
+  window.AppApi.jumpToBracket = jumpToBracket
+  window.AppApi.selectToBracket = selectToBracket
+  window.AppApi.revealDefinition = revealDefinition
+  window.AppApi.peekDefinition = peekDefinition
+  window.AppApi.setOriginalText = setOriginalText
+  window.AppApi.getOriginalText = getOriginalText
+  window.AppApi.revealLineInCenter = revealLineInCenter
+  window.AppApi.saveViewState = saveViewState
+  window.AppApi.restoreViewState = restoreViewState
+  window.AppApi.getDiffCount = getDiffCount
+  window.AppApi.formatDocument = formatDocument
+  window.AppApi.isSuggestWidgetVisible = isSuggestWidgetVisible
+  window.AppApi.isParameterHintsWidgetVisible = isParameterHintsWidgetVisible
+  window.AppApi.insertSnippet = insertSnippet
+  window.AppApi.parseSnippets = parseSnippets
+  window.AppApi.setDefaultSnippets = setDefaultSnippets
+  window.AppApi.clearSnippets = clearSnippets
+  window.AppApi.updateSnippetByGUID = updateSnippetByGUID
+  window.AppApi.setMarkers = setMarkers
+  window.AppApi.getMarkers = getMarkers
+  window.AppApi.goNextMarker = goNextMarker
+  window.AppApi.goPreviousMarker = goPreviousMarker
+  window.AppApi.goToFuncDefinition = goToFuncDefinition
+  window.AppApi.fold = fold
+  window.AppApi.foldAll = foldAll
+  window.AppApi.unfold = unfold
+  window.AppApi.unfoldAll = unfoldAll
+  window.AppApi.scale = scale
+  window.AppApi.gotoLine = gotoLine
+  window.AppApi.showVariablesDescription = showVariablesDescription
+  window.AppApi.updateVariableDescription = updateVariableDescription
+  window.AppApi.setDefaultStyle = setDefaultStyle
+  window.AppApi.setLineNumbersDecorations = setLineNumbersDecorations
+  window.AppApi.getDifferences = getDifferences
+  window.AppApi.goNextIssue = goNextIssue
+  window.AppApi.goPreviousIssue = goPreviousIssue
+  window.AppApi.getReviewIssues = getReviewIssues
+  window.AppApi.setReviewIssues = setReviewIssues
+  window.AppApi.startCodeReview = startCodeReview
+  window.AppApi.stopCodeReview = stopCodeReview
+  window.AppApi.generateEventWithSuggestData = generateEventWithSuggestData
+  window.AppApi.getLineNumber = getLineNumber
+  window.AppApi.createEditor = createEditor
+  window.AppApi.generateEscapeEvent = generateEscapeEvent
+  window.AppApi.disposeEditor = disposeEditor
+  window.AppApi.getActiveDiffEditor = getActiveDiffEditor
+  window.AppApi.getActiveEditor = getActiveEditor
+  window.AppApi.setFindWidgetDisplay = setFindWidgetDisplay
+  // #endregion
 });
 

@@ -57,8 +57,6 @@
         e.origin
       );
 
-      //if (e.origin !== "https://github.com/workmikhail") return;
-
       const data = e.data;
       if (!data || data.type !== "call") return;
 
@@ -80,10 +78,13 @@
         console.error("Error executing method:", method, err);
         result = null;
       }
-      e.source.postMessage({
-        type: "result",
-        value: result
-      }, "*");
+      if (result !== undefined) {
+        e.source.postMessage({
+          type: "result",
+          method,
+          value: result
+        }, "*");
+      }
     });
   </script>
 </body>
