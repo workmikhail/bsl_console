@@ -189,7 +189,7 @@ define([], function () {
                 'foreground': '#d4d4d4',
                 'editor.background': '#252f3d',
                 'editor.selectionBackground': '#103F60',
-                'editor.selectionHighlightBackground': '#495662',
+                'editor.selectionHighlightBackground': '#b1f1f1',
                 'editor.inactiveSelectionBackground': '#495662',
                 'editorCursor.foreground': '#d4d4d4',
                 'editorSuggestWidget.background': '#252526',
@@ -200,7 +200,7 @@ define([], function () {
                 'editorWidget.foreground': '#d4d4d4',
                 'editorWidget.border': '#d4d4d4',
                 'list.hoverBackground': '#2a2d2e',
-                'editor.lineHighlightBorder': '#b1b1b1',
+                'editor.lineHighlightBorder': '#b1f1f1',
                 'editorWidget.border': '#454545'
             },
             white: {
