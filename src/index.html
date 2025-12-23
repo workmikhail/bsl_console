@@ -81,6 +81,7 @@
       if (result !== undefined) {
         e.source.postMessage({
           type: "result",
+          id: data.id,
           method,
           value: result
         }, "*");
