@@ -1909,6 +1909,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
         {type: "editor-ready"},
         "*"
       );
+      console.log("[IFRAME] Editor is ready");
     } catch (err) {
       console.error("Error notifying parent with editor-ready state:", err);
     }
