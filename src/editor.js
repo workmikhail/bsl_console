@@ -1903,6 +1903,15 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
     setDefaultStyle();
     initEditorEventListenersAndProperies();
 
+    // notify about editor creation
+    try {
+      window.parent.postMessage(
+        {type: "editor-ready"},
+        "*"
+      );
+    } catch (err) {
+      console.error("Error notifying parent with editor-ready state:", err);
+    }
   }
 
   function registerCodeLensProviders() {
