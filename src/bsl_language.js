@@ -187,7 +187,7 @@ define([], function () {
         colors: {
             dark: {
                 'foreground': '#d4d4d4',
-                'editor.background': '#b52f3d',
+                'editor.background': '#252f3d',
                 'editor.selectionBackground': '#103F60',
                 'editor.selectionHighlightBackground': '#495662',
                 'editor.inactiveSelectionBackground': '#495662',
