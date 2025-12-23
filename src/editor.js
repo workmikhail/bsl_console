@@ -1876,7 +1876,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
       theme: theme,
       value: text,
       language: language_id,
-      contextmenu: true,
+      contextmenu: false,
       wordBasedSuggestions: false,
       scrollBeyondLastLine: false,
       insertSpaces: false,
@@ -1902,17 +1902,6 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
     setDefaultStyle();
     initEditorEventListenersAndProperies();
-
-    // notify about editor creation
-    try {
-      window.parent.postMessage(
-        {type: "editor-ready"},
-        "*"
-      );
-      console.log("[IFRAME] Editor is ready");
-    } catch (err) {
-      console.error("Error notifying parent with editor-ready state:", err);
-    }
   }
 
   function registerCodeLensProviders() {
@@ -4440,6 +4429,9 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
   window.AppApi.getActiveDiffEditor = getActiveDiffEditor
   window.AppApi.getActiveEditor = getActiveEditor
   window.AppApi.setFindWidgetDisplay = setFindWidgetDisplay
+  window.AppApi.isEditorReady = function () {
+    return !!window.editor;
+  };
   // #endregion
 });
 
