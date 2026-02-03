@@ -4,7 +4,7 @@ define(['bslGlobals', 'bslMetadata', 'snippets', 'bsl_language', 'vs/editor/edit
 
   // #region global vars 
   selectionText = '';
-  engLang = false;
+  engLang = true;
   contextData = new Map();
   readOnlyMode = false;
   queryMode = false;
